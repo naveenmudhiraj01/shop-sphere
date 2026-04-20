@@ -1,121 +1,158 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React, { useState } from 'react';
+import { Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
+import { Provider, useSelector, useDispatch } from 'react-redux';
+import { store } from './store/store';
+import { FaShoppingCart, FaBars } from 'react-icons/fa';
 
-function App() {
-  const [count, setCount] = useState(0)
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Home from './pages/Home';
+import ProductsPage from './pages/ProductsPage';
+import ProtectedRoutes from './components/ProtectedRoutes';
+import DashBoard from './pages/DashBoard';
+import Cart from './components/Cart';
+
+import './App.css';
+
+const App = () => {
+  return (
+    <Provider store={store}>
+      <AppContent />
+    </Provider>
+  );
+};
+
+const AppContent = () => {
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // ✅ FIX: useSelector instead of store.getState()
+  const currentUser = useSelector((state) => state.user.currentUser);
+  const items = useSelector((state) => state.cart.items);
+
+  const cartItemCount = items.reduce((total, item) => total + item.quantity, 0);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    // dispatch(logout()); // if you have logout action
+    navigate('/login');
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="app">
+      <header className="header">
+        <div className="header-content">
+          <div className="logo">
+            <h1>ShopCart</h1>
+          </div>
 
-      <div className="ticks"></div>
+          <nav className={`nav ${isMobileMenuOpen ? 'nav-open' : ''}`}>
+            {/* ✅ FIX: use Link instead of <a> */}
+            <Link to="/" className="nav-link">Home</Link>
+            <Link to="/products" className="nav-link">Products</Link>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+            {currentUser?.role === 'seller' && (
+              <Link to="/seller/dashboard" className="nav-link">Seller Dashboard</Link>
+            )}
+            {currentUser?.role === 'admin' && (
+              <Link to="/admin/dashboard" className="nav-link">Admin Dashboard</Link>
+            )}
+          </nav>
+
+          <div className="header-actions">
+            {currentUser ? (
+              <div className="user-menu">
+                <span className="welcome-text">
+                  Welcome, {currentUser.role === 'admin' ? 'admin' : (currentUser.name || currentUser.email)}
+                </span>
+
+                <button className="logout-btn" onClick={handleLogout}>
+                  LOGOUT
+                </button>
+              </div>
+            ) : (
+              <div className="auth-links">
+                <Link to="/login" className="auth-link">Login</Link>
+                <Link to="/signup" className="auth-link signup">Sign Up</Link>
+              </div>
+            )}
+
+            <button className="cart-btn" onClick={() => setIsCartOpen(true)}>
+              <FaShoppingCart />
+              {cartItemCount > 0 && (
+                <span className="cart-count">{cartItemCount}</span>
+              )}
+            </button>
+
+            <button
+              className="mobile-menu-btn"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              <FaBars />
+            </button>
+          </div>
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      </header>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
-}
+      {/* Main Content */}
+      <main className="main-content">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
 
-export default App
+          <Route
+            path="/products"
+            element={
+              <ProtectedRoutes>
+                <ProductsPage />
+              </ProtectedRoutes>
+            }
+          />
+
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoutes>
+                <DashBoard />
+              </ProtectedRoutes>
+            }
+          />
+
+          <Route
+            path="/seller/dashboard"
+            element={
+              <ProtectedRoutes role="seller">
+                <DashBoard />
+              </ProtectedRoutes>
+            }
+          />
+
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoutes role="admin">
+                <DashBoard />
+              </ProtectedRoutes>
+            }
+          />
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+
+      {/* Footer */}
+      <footer className="footer">
+        <p>&copy; 2024 ShopCart. All rights reserved.</p>
+      </footer>
+
+      {/* Cart */}
+      <Cart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+    </div>
+  );
+};
+
+export default App;
