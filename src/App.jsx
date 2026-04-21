@@ -29,7 +29,6 @@ const AppContent = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // ✅ FIX: useSelector instead of store.getState()
   const currentUser = useSelector((state) => state.user.currentUser);
   const items = useSelector((state) => state.cart.items);
 
@@ -37,7 +36,6 @@ const AppContent = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
-    // dispatch(logout()); // if you have logout action
     navigate('/login');
   };
 
@@ -50,7 +48,6 @@ const AppContent = () => {
           </div>
 
           <nav className={`nav ${isMobileMenuOpen ? 'nav-open' : ''}`}>
-            {/* ✅ FIX: use Link instead of <a> */}
             <Link to="/" className="nav-link">Home</Link>
             <Link to="/products" className="nav-link">Products</Link>
 
@@ -66,11 +63,19 @@ const AppContent = () => {
             {currentUser ? (
               <div className="user-menu">
                 <span className="welcome-text">
-                  Welcome, {currentUser.role === 'admin' ? 'admin' : (currentUser.name || currentUser.email)}
+                  Welcome, {currentUser.role === 'admin'
+                    ? 'admin'
+                    : (currentUser.name || currentUser.email)}
                 </span>
 
+                {/* ✅ NEW LOGOUT BUTTON */}
                 <button className="logout-btn" onClick={handleLogout}>
-                  LOGOUT
+                  <div className="sign">
+                    <svg viewBox="0 0 512 512">
+                      <path d="M377.9 105.9L352 131.9 406.1 186H192v36h214.1L352 276.1l25.9 26 96-96zM160 64h96V0H160c-35.3 0-64 28.7-64 64v384c0 35.3 28.7 64 64 64h96v-64h-96V64z"/>
+                    </svg>
+                  </div>
+                  <div className="text">LogIn</div>
                 </button>
               </div>
             ) : (
@@ -97,7 +102,6 @@ const AppContent = () => {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="main-content">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -144,12 +148,10 @@ const AppContent = () => {
         </Routes>
       </main>
 
-      {/* Footer */}
       <footer className="footer">
         <p>&copy; 2024 ShopCart. All rights reserved.</p>
       </footer>
 
-      {/* Cart */}
       <Cart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
   );

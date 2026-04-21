@@ -4,11 +4,12 @@
       "id": "1",
       "email": "admin@gmail.com",
       "password": "1234",
-      "role": "admin",
-      "name": "Platform Admin",
-      "createdAt": "2024-01-01T00:00:00.000Z"
+      "role": "admin"
+     
+
     },
     {
+      
       "id": "2",
       "email": "user@gmail.com",
       "password": "1234",
@@ -47,7 +48,21 @@
       "address": "321 Pine Rd, City, State 12345",
       "phone": "+1234567893",
       "createdAt": "2024-01-05T00:00:00.000Z"
+    },
+    {
+      "email": "naveen@gmail.com",
+      "password": "1234",
+      "role": "user",
+      "id": "K-iPe6SKjmI"
+    },
+    {
+      "email": "banu@gmail.com",
+      "password": "1234",
+      "role": "customer",
+      "name": "",
+      "id": "CzLhZFIEzBs"
     }
+   
   ],
   "products": [
     {
